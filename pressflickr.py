@@ -13,8 +13,8 @@ def link_html(NSID, att):
     return link_html
 
 
-def set_to_html(NSID, set_id):
-    hits = flickr.photosets_getPhotos(photoset_id=set_id)
+def tag_to_html(NSID, tag):
+    hits = flickr.photos_search(user_id=NSID, tags=[tag])
     postcontent = ''
     for p in hits[0]:
          postcontent += '<p>' + link_html(NSID, p.attrib) + "</p>\n"
@@ -40,9 +40,8 @@ def setup_config(configpath):
     if not os.path.exists(configpath):
         # Set up initial config file
         config.add_section('Main')
-        config.set('Main', 'api_key', 'YOUR_API_KEY_HERE')
         config.set('Main', 'flickrusers', 'COMMA_DELIMITED_LIST_OF_USER_NSIDS_HERE')
-        config.set('Main', 'flickrsets', 'ONE_SET_PER_NSID_COMMA_DELIMITED_SAME_ORDER')
+        config.set('Main', 'flickrtag', 'ONE_TAG_PER_NSID_COMMA_DELIMITED_SAME_ORDER')
         config.set('Main', 'wp_user', 'YOUR_WORDPRESS_USERNAME_HERE')
         config.set('Main', 'wp_pass', 'YOUR_WORDPRESS_PASSWORD_HERE')
         config.set('Main', 'wp_url', 'YOUR_WORDPRESS_URL_HERE')
@@ -99,27 +98,33 @@ def pos(item, seq):
         if x == item:
             return i
     
-def get_set_by_NSID(NSID,config):
-    set_ids = config.get('Main', 'flickrsets',0).split(',')
+def get_tag_by_NSID(NSID,config):
+    tags = config.get('Main', 'flickrtags',0).split(',')
     NSIDs = config.get('Main', 'flickrusers',0).split(',')
-    return set_ids[pos(NSID,NSIDs)]
+    return tags[pos(NSID,NSIDs)]
 
 if __name__ == '__main__':
     configpath = os.path.expanduser("~/.pressflickr/config.cfg")
     config = setup_config(configpath)
-    flickr = flickrapi.FlickrAPI(config.get('Main', 'api_key', 0))
     if len(sys.argv) == 2:
         NSID = sys.argv[1]
     else:
         print "An NSID from ~/.pressflickr/config.cfg must be supplied as the first argument!"
         sys.exit(1)
-    set_id = get_set_by_NSID(NSID, config)
+    
+    api_key = '7e3dfb26a6d98574fc6f1241f9c76d7b'
+    api_secret = '6e2a0429802b8759'
+    flickr = flickrapi.FlickrAPI(api_key, api_secret)
+    (token, frob) = flickr.get_token_part_one(perms='read')
+    if not token: raw_input("Press ENTER after you authorized this program")
+    flickr.get_token_part_two((token, frob))
+    
     post(config.get('Main', 'wp_url', 0),
          config.get('Main', 'wp_user', 0),
          config.get('Main', 'wp_pass', 0),
          config.get('Main', 'blogid', 0),
          config.get('Main', 'title', 0),
-         set_to_html(NSID, set_id))
+         tag_to_html(NSID, get_tag_by_NSID(NSID, config)))
 
 
     ### Used to have path as sys.argv[1], but I'd rather reduce the
@@ -131,29 +136,14 @@ if __name__ == '__main__':
 ################################################################
 ###                        DEPRECATED                        ###
 ################################################################
-def get_links_by_search(user, searchtext):
-    "Too much trouble for many pics"
-    NSID=usernames[user]
-    hits = flickr.photos_search(user_id=NSID,text=searchtext)
+def set_to_html(NSID, set_id):
+    """Unfortunately you can't hide sets, so this would clutter the
+    photostream too much.  Tag search requires authentication in order
+    to get the newest tags, but, meh. Authentication isn't too much
+    trouble with Flickr.
+    """
+    hits = flickr.photosets_getPhotos(photoset_id=set_id)
+    postcontent = ''
     for p in hits[0]:
-        print link_html(NSID, p.attrib)
-
-def get_ids_by_tags(user, tags):
-    "Tag search unfortunately requires user credentials"
-    NSID=usernames[user]
-    hits = flickr.photos_search(user_id=NSID,tags=tags)
-    for p in hits[0]:
-        print link_html(NSID, p.attrib)
-
-def get_link_by_URL(user, URL):
-    "Too much work with copy-pasting, would rather rely on flickr set UI since it's already quite good"
-    NSID=usernames[user]
-    pattern = re.compile('^https?://[^/]*/photos/[^/]*/([0-9]+)')
-    photoid = pattern.match(URL).group(1)
-    photo=flickr.photos_getInfo(user_id=NSID,photo_id=photoid)
-    return link_html(NSID, photo[0].attrib)
-
-
-def get_links_by_URLs(user, URLs):
-    for URL in URLs:
-        print "<p>" + get_link_by_URL(user,URL) + "</p>"
+         postcontent += '<p>' + link_html(NSID, p.attrib) + "</p>\n"
+    return postcontent
