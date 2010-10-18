@@ -104,7 +104,7 @@ if __name__ == '__main__':
     
     api_key = '7e3dfb26a6d98574fc6f1241f9c76d7b'
     api_secret = '6e2a0429802b8759'
-    flickr = flickrapi.FlickrAPI(api_key, api_secret)
+    flickr = flickrapi.FlickrAPI(api_key, api_secret, username=NSID)
     (token, frob) = flickr.get_token_part_one(perms='read')
     if not token: raw_input("Press ENTER after you authorized this program")
     flickr.get_token_part_two((token, frob))
