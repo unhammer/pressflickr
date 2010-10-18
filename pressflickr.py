@@ -83,16 +83,6 @@ def find_wpcom_blog_id(wp_url, wp_user, wp_pass):
     return blogid
 
 
-def find_flickr_NSID_path(flickrusers):
-    ### For turning path_aliases into NSID's, convenience function
-    flickr_NSID_path = {}
-    for u_id in flickrusers:
-        u = flickr.people_getinfo(user_id=u_id)
-        path_alias = u[0].attrib['path_alias']
-        flickr_NSID_path[ path_alias ] = u_id
-        #print u_id + ' is ' + u[0][0].text + ' (' + u[0].attrib['path_alias'] + ')'
-    return flickr_NSID_path
-
 def pos(item, seq):
     for i,x in enumerate(seq):
         if x == item:
@@ -126,24 +116,3 @@ if __name__ == '__main__':
          config.get('Main', 'title', 0),
          tag_to_html(NSID, get_tag_by_NSID(NSID, config)))
 
-
-    ### Used to have path as sys.argv[1], but I'd rather reduce the
-    ### amount of requests and call with plain NSID's
-    # flickr_NSID_path = find_flickr_NSID_path(config.get('Main', 'flickrusers', 0).split(','))
-    # NSID = flickr_NSID_path[path]
-    
-
-################################################################
-###                        DEPRECATED                        ###
-################################################################
-def set_to_html(NSID, set_id):
-    """Unfortunately you can't hide sets, so this would clutter the
-    photostream too much.  Tag search requires authentication in order
-    to get the newest tags, but, meh. Authentication isn't too much
-    trouble with Flickr.
-    """
-    hits = flickr.photosets_getPhotos(photoset_id=set_id)
-    postcontent = ''
-    for p in hits[0]:
-         postcontent += '<p>' + link_html(NSID, p.attrib) + "</p>\n"
-    return postcontent
