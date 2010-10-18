@@ -28,7 +28,7 @@ def post(wp_url, wp_user, wp_pass, blogid, title, content):
     post.title = title
     post.description = content
     print "Posting to " + wp_url + " with title " + title
-    post_id = wp.newPost(post, True)
+    post_id = wp.newPost(post, False)
     return post_id
 
 
