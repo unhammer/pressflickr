@@ -1,5 +1,16 @@
 Requires [[http://www.blackbirdblog.it/programmazione/progetti/28][flickrapi]] and [[http://stuvel.eu/projects/flickrapi%20][wordpresslib]]. Both are available for Arch Linux
 from AUR. 
 
+Run once to get an example configuration file. After editing that, run
+
+#+BEGIN_SRC
+ $ python pressflickr.py MY_NSID
+#+END_SRC
+
+where MY_NSID is one of those listed in your configuration file, at
+=~/.pressflickr/config.cfg=.
 
 
+See
+http://www.flickr.com/services/api/explore/?method=flickr.people.getInfo
+while logged in to find your NSID.
