@@ -14,3 +14,13 @@ where MY_NSID is one of those listed in your configuration file, at
 See
 http://www.flickr.com/services/api/explore/?method=flickr.people.getInfo
 while logged in to find your NSID.
+
+
+Note: when asked to allow pressflickr read-access to you account, be
+sure to be logged in as the user you're running as, otherwise the tag
+search will not work. If you were logged in as the wrong user and
+authorised, you can remove the =~/.flickr= directory to remove the
+authorisation tokens, then run pressflickr again to
+re-authorise. However, as long as you're logged in as the user with
+the NSID passed to pressflickr when authorising, pressflickr will
+store one authorisation token per user with no trouble.
