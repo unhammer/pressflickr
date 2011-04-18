@@ -1,4 +1,4 @@
-Requires [[http://www.blackbirdblog.it/programmazione/progetti/28][flickrapi]] and [[http://stuvel.eu/projects/flickrapi%20][wordpresslib]]. Both are available for Arch Linux
+Requires [[http://stuvel.eu/projects/flickrapi][flickrapi]] and [[https://github.com/charlax/wordpresslib][wordpresslib]]. Both are available for Arch Linux
 from AUR. 
 
 Run once to get an example configuration file. After editing that, run
