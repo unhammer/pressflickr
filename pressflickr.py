@@ -9,7 +9,9 @@ def link_html(NSID, att):
     # z before the .jpg is medium, l is large...
     z_url = "http://farm" + att['farm'] + ".static.flickr.com/" + att['server'] + "/" + att['id'] + "_" + att['secret'] + "_z.jpg"
     page_url = "http://www.flickr.com/photos/" + NSID + "/" + att['id']
-    link_html = '<a href="' + page_url + '"><img src="' + z_url + '" alt="' + att['title'] + '"/></a>'
+    # WAS: link_html = '<a href="' + page_url + '"><img src="' + z_url + '" alt="' + att['title'] + '" width="404px"/></a>'
+    # (but we don't want to link)
+    link_html = '<img src="' + z_url + '" alt="' + att['title'] + '" class="pressflickr"/>'
     return link_html
 
 
