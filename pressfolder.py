@@ -15,6 +15,23 @@ except ImportError, e:
     raise e
 
 
+class Progress(object):
+    def __init__(self, name):
+        self._seen = 0.0
+        self._last_pct = 0.0
+        self._name = name
+
+    def update(self, total, size):
+        self._seen += size
+        pct = (self._seen / total) * 100.0
+
+        if pct > self._last_pct:
+            print '%s %.2f %% done' % (self._name, pct)
+            self._last_pct = pct
+        # If size is very small and total is big, pct
+        # stays the same, so don't update
+
+
 def getBlog(wp_url, wp_user, wp_pass, blogid):
     print "Connecting to " + wp_url
     wp = wordpresslib.WordPressClient(xmlrpc_url(wp_url),
@@ -39,7 +56,7 @@ def upload_cwd(blog):
     for i in images:
         print "Uploading " + i + " ..."
 
-        url = blog.newMediaObject(i)
+        url = blog.newMediaObject(i, Progress(i).update)
 
         html += "<p><img src=\"%s\" alt=\"%s\" class=\"pressfolder\"/></p>\n" % (
             url, os.path.basename(i)
