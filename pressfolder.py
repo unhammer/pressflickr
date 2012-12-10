@@ -1,9 +1,18 @@
 #!/usr/bin/env python2
-
 from __future__ import with_statement
-import re, sys, os, glob, mimetypes, xmlrpclib
-import wordpresslib
-import ConfigParser
+
+import re, sys, os, glob, mimetypes, xmlrpclib, ConfigParser
+
+try:
+    import wordpresslib.wordpresslib as wordpresslib
+except ImportError, e:
+    print
+    print "Try this:"
+    print "\tcd " + os.path.dirname(__file__)
+    print "\tgit clone --branch progress_bar git://github.com/unhammer/wordpresslib.git"
+    print "\ttouch wordpresslib/__init__.py"
+    print
+    raise e
 
 
 def getBlog(wp_url, wp_user, wp_pass, blogid):
@@ -30,27 +39,11 @@ def upload_cwd(blog):
     for i in images:
         print "Uploading " + i + " ..."
 
-        # wordpresslib's newMediaObject doesn't add mimetype, reimplement here:
-        with open(i, 'rb') as f:
-            mediaBits = f.read()
+        url = blog.newMediaObject(i)
 
-        mimetype = 'image/jpeg'
-        mimeguess = mimetypes.guess_type(i)
-        if mimeguess and mimeguess[0]:
-            mimetype = mimeguess[0]
-
-        mediaStruct = {
-                'name' : os.path.basename(i),
-                'type' : mimetype,
-                'bits' : xmlrpclib.Binary(mediaBits)
-        }
-
-        result = blog._server.metaWeblog.newMediaObject(blog.blogId, 
-                                                        blog.user,
-                                                        blog.password,
-                                                        mediaStruct)
         html += "<p><img src=\"%s\" alt=\"%s\" class=\"pressfolder\"/></p>\n" % (
-            result['url'], result['file'])
+            url, os.path.basename(i)
+            )
     return html
 
 
