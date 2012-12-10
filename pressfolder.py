@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 from __future__ import with_statement
 
-import re, sys, os, glob, mimetypes, xmlrpclib, ConfigParser
+import re, sys, os, glob, ConfigParser, webbrowser
 
 try:
     import wordpresslib.wordpresslib as wordpresslib
@@ -44,7 +44,7 @@ def post(blog, title, content):
     post = wordpresslib.WordPressPost()
     post.title = title
     post.description = content
-    post_id = blog.newPost(post, False)
+    post_id = blog.newPost(post, publish=False)
     return post_id
 
 def upload_cwd(blog):
@@ -153,7 +153,11 @@ if __name__ == '__main__':
          
     html = upload_cwd(blog)
 
-    post(blog,
-         config.get('Main', 'title', 0),
-         html)
+    post_id = post(blog,
+                   config.get('Main', 'title', 0),
+                   html)
 
+    url = "%swp-admin/post.php?post=%s&action=edit" % (blog.url.rstrip('xmlrpc.php'),
+                                                       post_id)
+    print "Opening edit post page at " + url
+    webbrowser.open(url)
