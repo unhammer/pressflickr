@@ -96,12 +96,12 @@ def get_tag_by_NSID(NSID,config):
     return tags[pos(NSID,NSIDs)]
 
 if __name__ == '__main__':
-    configpath = os.path.expanduser("~/.pressflickr/config.cfg")
+    configpath = os.path.expanduser("~/.config/pressflickr/config.cfg")
     config = setup_config(configpath)
     if len(sys.argv) == 2:
         NSID = sys.argv[1]
     else:
-        print "An NSID from ~/.pressflickr/config.cfg must be supplied as the first argument!"
+        print "An NSID from ~/.config/pressflickr/config.cfg must be supplied as the first argument!"
         sys.exit(1)
     
     api_key = '7e3dfb26a6d98574fc6f1241f9c76d7b'

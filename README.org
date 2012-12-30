@@ -8,7 +8,7 @@ Run once to get an example configuration file. After editing that, run
 #+END_SRC
 
 where MY_NSID is one of those listed in your configuration file, at
-=~/.pressflickr/config.cfg=.
+=~/.config/pressflickr/config.cfg=.
 
 
 See

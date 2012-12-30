@@ -143,7 +143,7 @@ def xmlrpc_url(wp_url):
 
 
 if __name__ == '__main__':
-    configpath = os.path.expanduser("~/.pressfolder/config.cfg")
+    configpath = os.path.expanduser("~/.config/pressfolder/config.cfg")
     config = setup_config(configpath)
     
     blog = getBlog(config.get('Main', 'wp_url', 0),
