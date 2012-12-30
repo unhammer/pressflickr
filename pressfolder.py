@@ -52,17 +52,24 @@ def post(blog, title, content):
 def upload_cwd(blog):
     # glob will work in current working directory, which is what we
     # want, so no need to prepend a folder path here
+    from pyexpat import ExpatError
     images = glob.glob("*.[Jj][Pp][Gg]") + glob.glob("*.[Pp][Nn][Gg]") + glob.glob("*.[Gg][Ii][Ff]")
     print "Found " + ", ".join(images)
     html = ""
-    for i in images:
-        print "Uploading " + i + " ..."
+    for i,path in enumerate(images):
+        print "Uploading %s (%s/%s)..." % (path,i+1,len(images))
 
-        url = blog.newMediaObject(i, Progress(i).update)
-
-        html += "<p><img src=\"%s\" alt=\"%s\" class=\"pressfolder\"/></p>\n" % (
-            url, os.path.basename(i)
+        try:
+            url = blog.newMediaObject(path, Progress("%s (%s/%s)" % (path,i+1,len(images))).update)
+            print ""
+            html += "<p><img src=\"%s\" alt=\"%s\" class=\"pressfolder\"/></p>\n" % (
+                url, os.path.basename(path)
             )
+        except ExpatError as e:
+            print "\nExpatError: {0}\n on {1}\n{2}".format(e.message, path, e)
+            html += "<p>%s?</p>\n" % (os.path.basename(path),)
+
+
     return html
 
 
