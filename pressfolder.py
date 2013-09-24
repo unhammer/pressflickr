@@ -49,7 +49,7 @@ def post(blog, title, content):
     post_id = blog.newPost(post, publish=False)
     return post_id
 
-def upload_cwd(blog):
+def upload_cwd(blog, same_alt):
     # glob will work in current working directory, which is what we
     # want, so no need to prepend a folder path here
     from pyexpat import ExpatError
@@ -58,16 +58,20 @@ def upload_cwd(blog):
     html = ""
     for i,path in enumerate(images):
         print "Uploading %s (%s/%s)..." % (path,i+1,len(images))
-
+        if same_alt:
+            alt = same_alt
+        else:
+            alt = os.path.basename(path.decode('utf-8'))
         try:
             url = blog.newMediaObject(path, Progress("%s (%s/%s)" % (path,i+1,len(images))).update)
             print ""
             html += "<p><img src=\"%s\" alt=\"%s\" class=\"pressfolder\"/></p>\n" % (
-                url, os.path.basename(path)
+                url,
+                alt
             )
         except ExpatError as e:
             print "\nExpatError: {0}\n on {1}\n{2}".format(e.message, path, e)
-            html += "<p>%s?</p>\n" % (os.path.basename(path),)
+            html += "<p>%s?</p>\n" % (os.path.basename(path.decode('utf-8')),)
 
 
     return html
@@ -100,7 +104,10 @@ def setup_config(configpath):
         print "Assuming blogid is " + blogid + ", edit " + configpath + " if this is wrong"
         config.set('Main', 'blogid', blogid)
         with open(configpath, 'wb') as configfile: config.write(configfile)
-    
+    if not config.has_option('Main', 'alttext'):
+        config.set('Main', 'alttext', "")
+        with open(configpath, 'wb') as configfile: config.write(configfile)
+
     return config
 
 
@@ -160,7 +167,8 @@ if __name__ == '__main__':
                    config.get('Main', 'wp_pass', 0),
                    config.get('Main', 'blogid', 0))
          
-    html = upload_cwd(blog)
+    html = upload_cwd(blog,
+                      config.get('Main', 'alttext', 0))
 
     post_id = post(blog,
                    config.get('Main', 'title', 0),
