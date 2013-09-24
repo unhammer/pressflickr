@@ -52,7 +52,7 @@ def post(blog, title, content):
 def filepath_to_class(path):
     cm = re.search(r'(crop[bt][0-9]+(px|pct))[^/]*$', path)
     if cm:
-        return cm.group(1)
+        return "crop "+cm.group(1)
     else:
         return ""
 
