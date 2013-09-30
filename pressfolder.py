@@ -49,13 +49,6 @@ def post(blog, title, content):
     post_id = blog.newPost(post, publish=False)
     return post_id
 
-def filepath_to_class(path):
-    cm = re.search(r'(crop[bt][0-9]+(px|pct))[^/]*$', path)
-    if cm:
-        return "crop "+cm.group(1)
-    else:
-        return ""
-
 def upload_cwd(blog, same_alt):
     # glob will work in current working directory, which is what we
     # want, so no need to prepend a folder path here
@@ -69,12 +62,10 @@ def upload_cwd(blog, same_alt):
             alt = same_alt
         else:
             alt = os.path.basename(path.decode('utf-8'))
-        pclass = filepath_to_class(path)
         try:
             url = blog.newMediaObject(path, Progress("%s (%s/%s)" % (path,i+1,len(images))).update)
             print ""
-            html += "<p class=\"%s\"><img src=\"%s\" alt=\"%s\" class=\"pressfolder\"/></p>\n" % (
-                pclass,
+            html += "<img src=\"%s\" alt=\"%s\" class=\"pressfolder\"/>\n" % (
                 url,
                 alt
             )
