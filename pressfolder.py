@@ -2,6 +2,10 @@
 from __future__ import with_statement
 
 import re, sys, os, glob, ConfigParser, webbrowser
+import Image
+
+# Throw a hissy fit if image width/height is over this:
+MAX_IMAGE_SIZE=1600
 
 try:
     import wordpresslib.wordpresslib as wordpresslib
@@ -49,12 +53,20 @@ def post(blog, title, content):
     post_id = blog.newPost(post, publish=False)
     return post_id
 
+def check_image_sizes(image_paths):
+    for path in image_paths:
+        im = Image.open(path)
+        (w,h) = im.size
+        if w>MAX_IMAGE_SIZE or h>MAX_IMAGE_SIZE:
+            raise Exception("\n\nImage %s has size %d x %d (over %d), please make sure your images are a reasonable size first!" % (path, w, h, MAX_IMAGE_SIZE))
+
 def upload_cwd(blog, same_alt):
     # glob will work in current working directory, which is what we
     # want, so no need to prepend a folder path here
     from pyexpat import ExpatError
     images = glob.glob("*.[Jj][Pp][Gg]") + glob.glob("*.[Pp][Nn][Gg]") + glob.glob("*.[Gg][Ii][Ff]")
     print "Found " + ", ".join(images)
+    check_image_sizes(images)
     html = ""
     for i,path in enumerate(images):
         print "Uploading %s (%s/%s)..." % (path,i+1,len(images))
