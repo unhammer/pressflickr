@@ -4,8 +4,8 @@ from __future__ import with_statement
 import re, sys, os, glob, ConfigParser, webbrowser
 import Image
 
-# Throw a hissy fit if image width/height is over this:
-MAX_IMAGE_SIZE=1600
+# Throw a hissy fit if image width is over this:
+MAX_IMAGE_WIDTH=1600
 
 try:
     import wordpresslib.wordpresslib as wordpresslib
@@ -57,8 +57,8 @@ def check_image_sizes(image_paths):
     for path in image_paths:
         im = Image.open(path)
         (w,h) = im.size
-        if w>MAX_IMAGE_SIZE or h>MAX_IMAGE_SIZE:
-            raise Exception("\n\nImage %s has size %d x %d (over %d), please make sure your images are a reasonable size first!" % (path, w, h, MAX_IMAGE_SIZE))
+        if w>MAX_IMAGE_WIDTH:
+            raise Exception("\n\nImage %s has width %d, please make sure your images have a width < %d first!" % (path, w, MAX_IMAGE_WIDTH))
 
 def upload_cwd(blog, same_alt):
     # glob will work in current working directory, which is what we
